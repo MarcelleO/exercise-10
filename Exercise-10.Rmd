@@ -1,0 +1,75 @@
+---
+title: "Challenge-10"
+author: "Marcelle"
+date: "4/9/2022"
+output: html_document
+---
+
+```{r}
+
+library(tidyverse)
+library(broom)
+library(mosaic)
+f <- "https://raw.githubusercontent.com/difiore/ada-2022-datasets/main/KamilarAndCooperData.csv"
+d <- read_csv(f, col_names = TRUE)
+#plot 
+p1 <- plot(data=d, MaxLongevity_m ~ Body_mass_female_mean)
+p1
+
+p2 <- plot(data= d, log(Body_mass_female_mean) ~ MaxLongevity_m)
+p2
+
+p3 <- plot(data=d, log(Body_mass_female_mean)~ log(MaxLongevity_m))
+p3
+
+#run linear models
+m1 <- lm(formula= MaxLongevity_m  ~ Body_mass_female_mean, data=d)
+m1
+
+m2 <- lm(formula=MaxLongevity_m ~ log(Body_mass_female_mean) ,data=d)
+m2
+
+m3 <- lm(formula= log(MaxLongevity_m) ~ log(Body_mass_female_mean), data=d)
+m3
+
+#plot residuals in relation to the explanatory model
+
+r1 <- resid(m1)
+pr1 <- plot(m1$model$Body_mass_female_mean, r1)
+
+r2 <- resid(m2)
+pr2 <- plot(m2$model$`log(Body_mass_female_mean)`, r2)
+
+r3 <- resid(m3)
+pr3 <- plot(m3$model$`log(Body_mass_female_mean)`, r3)
+
+#Histograms
+hist(r1, xlim= c(-4 * sd(r1), 4 * sd(r1)), breaks= 20, main= "Histogram of Residuals")
+hist(r2, xlim= c(-4 * sd(r2), 4 * sd(r2)), breaks= 20, main= "Histogram of Residuals")
+hist(r3, xlim= c(-4 * sd(r3), 4 * sd(r3)), breaks= 20, main= "Histogram of Residuals")
+
+
+
+#generate qq plots for all 3 linear models
+#They appear normally distributed
+library(car)
+
+qqPlot(m1, distribution="norm", id=FALSE)
+qqPlot(m2, distribution="norm", id=FALSE)
+qqPlot(m3, distribution="norm", id=FALSE)
+
+
+#Run plot command for all 3 models
+plot(m1)
+plot(m2)
+plot(m3)
+
+#run shapiro wilkes test on residuals for all 3 models
+
+s1 <- shapiro.test(m1$residuals)
+s2 <- shapiro.test(m2$residuals)
+s3 <- shapiro.test(m3$residuals)
+s1
+s2
+s3
+```
